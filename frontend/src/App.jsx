@@ -1,0 +1,164 @@
+import { Logo, Badge } from "./components/components";
+import { SEED_PRODUCTS, SEED_USERS } from "./components/seedData";
+import HomePage from "./pages/Homepage";
+import { LoginPage, RegisterPage } from "./pages/Authpage";
+import CartPage from "./pages/Cartproducts";
+import CheckoutPage from "./pages/Checkout";
+
+import AdminPage from "./Admin/adminDashboard";
+import AdminOrdersPage from "./Admin/adminOrders";
+import AdminProductsPage from "./Admin/adminProducts";
+
+import { useState, useEffect, useRef } from "react";
+
+// ── Inline styles ──────────────────────────────────────────────────────────────
+export const G = {
+  gold: "#C9A84C",
+  goldLight: "#E8C96A",
+  goldDark: "#8B6914",
+  cream: "#FDF8F0",
+  dark: "#1A1208",
+  darkCard: "#231A0A",
+  textMuted: "#9A8060",
+  border: "rgba(201,168,76,0.2)",
+  borderHover: "rgba(201,168,76,0.6)",
+  error: "#E05555",
+  success: "#5BAD72",
+};
+
+const css = `
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:${G.dark};color:${G.cream};font-family:'Jost',sans-serif;min-height:100vh}
+  ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:${G.dark}}::-webkit-scrollbar-thumb{background:${G.goldDark}}
+  input,textarea,select{outline:none;border:none;background:transparent;font-family:'Jost',sans-serif;color:${G.cream}}
+  button{cursor:pointer;font-family:'Jost',sans-serif;border:none;outline:none}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .fadeUp{animation:fadeUp .5s ease forwards}
+  .gold-btn{background:linear-gradient(135deg,${G.goldDark},${G.gold});color:${G.dark};font-weight:500;letter-spacing:.08em;text-transform:uppercase;font-size:.78rem;padding:.7rem 1.8rem;border-radius:2px;transition:all .25s;box-shadow:0 2px 12px rgba(201,168,76,.25)}
+  .gold-btn:hover{box-shadow:0 4px 20px rgba(201,168,76,.45);transform:translateY(-1px)}
+  .ghost-btn{background:transparent;color:${G.gold};border:1px solid ${G.border};font-weight:400;letter-spacing:.08em;text-transform:uppercase;font-size:.75rem;padding:.65rem 1.6rem;border-radius:2px;transition:all .25s}
+  .ghost-btn:hover{border-color:${G.gold};color:${G.goldLight}}
+  .input-field{width:100%;background:rgba(255,255,255,.04);border:1px solid ${G.border};border-radius:2px;padding:.75rem 1rem;color:${G.cream};font-size:.9rem;transition:border .2s}
+  .input-field:focus{border-color:${G.gold}}
+  .card{background:${G.darkCard};border:1px solid ${G.border};border-radius:4px;transition:all .3s}
+  .card:hover{border-color:${G.borderHover};box-shadow:0 8px 32px rgba(0,0,0,.5)}
+  .tag{display:inline-block;padding:.2rem .6rem;border-radius:2px;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+  .divider{width:100%;height:1px;background:${G.border};margin:1.5rem 0}
+  label{font-size:.78rem;color:${G.textMuted};letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem;display:block}
+`;
+
+
+// ── Main App ───────────────────────────────────────────────────────────────────
+export default function App() {
+  // Persisted state
+  const [products, setProducts] = useState(() => {
+    try { const s = localStorage.getItem("zehura_products"); return s ? JSON.parse(s) : SEED_PRODUCTS; } catch { return SEED_PRODUCTS; }
+  });
+  const [users, setUsers] = useState(() => {
+    try { const s = localStorage.getItem("zehura_users"); return s ? JSON.parse(s) : SEED_USERS; } catch { return SEED_USERS; }
+  });
+  const [orders, setOrders] = useState(() => {
+    try { const s = localStorage.getItem("zehura_orders"); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+
+  const [currentUser, setCurrentUser] = useState(null);
+  const [page, setPage] = useState("home"); // home | login | register | cart | checkout | admin | admin-orders | admin-products
+  const [cart, setCart] = useState([]);
+  const [toast, setToast] = useState(null);
+
+  // Search & Filter
+  const [search, setSearch] = useState("");
+  const [filterMetal, setFilterMetal] = useState("all");
+  const [filterPrice, setFilterPrice] = useState("all");
+
+  // Persist
+  useEffect(()=>{ localStorage.setItem("zehura_products",JSON.stringify(products)); },[products]);
+  useEffect(()=>{ localStorage.setItem("zehura_users",JSON.stringify(users)); },[users]);
+  useEffect(()=>{ localStorage.setItem("zehura_orders",JSON.stringify(orders)); },[orders]);
+
+  const showToast = (msg,type="success") => {
+    setToast({msg,type});
+    setTimeout(()=>setToast(null),2500);
+  };
+
+  const addToCart = (product) => {
+    if(!currentUser) { setPage("login"); showToast("Please login to add items","error"); return; }
+    setCart(c => {
+      const ex = c.find(i=>i.id===product.id);
+      if(ex) return c.map(i=>i.id===product.id?{...i,qty:i.qty+1}:i);
+      return [...c,{...product,qty:1}];
+    });
+    showToast(`${product.name} added to cart`);
+  };
+
+  const removeFromCart = (id) => setCart(c=>c.filter(i=>i.id!==id));
+  const updateQty = (id,delta) => setCart(c=>c.map(i=>i.id===id?{...i,qty:Math.max(1,i.qty+delta)}:i).filter(i=>i.qty>0));
+  const cartTotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const cartCount = cart.reduce((s,i)=>s+i.qty,0);
+
+  const logout = () => { setCurrentUser(null); setCart([]); setPage("home"); };
+
+  // Sort & filter products
+  const sortedProducts = [...products].sort((a,b)=>b.createdAt-a.createdAt);
+  const recentProducts = sortedProducts.slice(0,4);
+  const filteredProducts = sortedProducts.filter(p => {
+    const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.metal.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase());
+    const matchMetal = filterMetal==="all" || p.metal===filterMetal;
+    const matchPrice = filterPrice==="all" ||
+      (filterPrice==="low" && p.price<5000) ||
+      (filterPrice==="mid" && p.price>=5000 && p.price<30000) ||
+      (filterPrice==="high" && p.price>=30000);
+    return matchSearch && matchMetal && matchPrice;
+  });
+
+  const isAdmin = currentUser?.role==="admin";
+  const recentIds = new Set(recentProducts.map(p=>p.id));
+
+  return (
+    <div style={{minHeight:"100vh",fontFamily:"'Jost',sans-serif"}}>
+      <style>{css}</style>
+
+      {/* Toast */}
+      {toast && (
+        <div style={{position:"fixed",top:20,right:20,zIndex:9999,background:toast.type==="error"?"#3a0a0a":"#0a2010",border:`1px solid ${toast.type==="error"?G.error:G.success}`,color:toast.type==="error"?G.error:G.success,padding:".75rem 1.2rem",borderRadius:4,fontSize:".85rem",maxWidth:280,animation:"fadeUp .3s ease"}}>
+          {toast.msg}
+        </div>
+      )}
+
+      {/* Navbar */}
+      <nav style={{position:"sticky",top:0,zIndex:100,background:"rgba(26,18,8,.95)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${G.border}`,padding:"1rem 2rem",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <button onClick={()=>setPage("home")} style={{background:"none",border:"none",cursor:"pointer"}}><Logo/></button>
+        <div style={{display:"flex",alignItems:"center",gap:"1.5rem"}}>
+          {!currentUser ? (
+            <>
+              <button className="ghost-btn" onClick={()=>setPage("login")}>Login</button>
+              <button className="gold-btn" onClick={()=>setPage("register")}>Register</button>
+            </>
+          ) : (
+            <>
+              <span style={{fontSize:".82rem",color:G.textMuted}}>Hi, {currentUser.name.split(" ")[0]}</span>
+              {isAdmin && <button className="ghost-btn" onClick={()=>setPage("admin")}>Admin Panel</button>}
+              <button onClick={()=>setPage("cart")} style={{background:"none",border:"none",position:"relative",color:G.cream,fontSize:"1.2rem",cursor:"pointer"}}>
+                🛒<Badge count={cartCount}/>
+              </button>
+              <button className="ghost-btn" onClick={logout} style={{fontSize:".72rem",padding:".5rem 1rem"}}>Logout</button>
+            </>
+          )}
+        </div>
+      </nav>
+
+      {/* Pages */}
+      {page==="home" && <HomePage products={filteredProducts} recentProducts={recentProducts} recentIds={recentIds} search={search} setSearch={setSearch} filterMetal={filterMetal} setFilterMetal={setFilterMetal} filterPrice={filterPrice} setFilterPrice={setFilterPrice} onAddCart={addToCart}/>}
+      {page==="login" && <LoginPage users={users} setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
+      {page==="register" && <RegisterPage users={users} setUsers={setUsers} setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
+      {page==="cart" && <CartPage cart={cart} removeFromCart={removeFromCart} updateQty={updateQty} cartTotal={cartTotal} setPage={setPage}/>}
+      {page==="checkout" && <CheckoutPage cart={cart} cartTotal={cartTotal} currentUser={currentUser} orders={orders} setOrders={setOrders} setCart={setCart} setPage={setPage} showToast={showToast} products={products} setProducts={setProducts}/>}
+      {page==="admin" && isAdmin && <AdminPage setPage={setPage} orders={orders} products={products}/>}
+      {page==="admin-orders" && isAdmin && <AdminOrdersPage orders={orders} setPage={setPage}/>}
+      {page==="admin-products" && isAdmin && <AdminProductsPage products={products} setProducts={setProducts} setPage={setPage} showToast={showToast}/>}
+    </div>
+  );
+}
