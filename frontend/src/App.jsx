@@ -139,7 +139,7 @@ export default function App() {
             </>
           ) : (
             <>
-              <span style={{fontSize:".82rem",color:G.textMuted}}>Hi, {currentUser.name.split(" ")[0]}</span>
+              <span style={{fontSize:".82rem",color:G.textMuted}}>Hi, {(currentUser.name || currentUser.email || "User").split(" ")[0]}</span>
               {isAdmin && <button className="ghost-btn" onClick={()=>setPage("admin")}>Admin Panel</button>}
               <button onClick={()=>setPage("cart")} style={{background:"none",border:"none",position:"relative",color:G.cream,fontSize:"1.2rem",cursor:"pointer"}}>
                 🛒<Badge count={cartCount}/>
@@ -152,8 +152,8 @@ export default function App() {
 
       {/* Pages */}
       {page==="home" && <HomePage products={filteredProducts} recentProducts={recentProducts} recentIds={recentIds} search={search} setSearch={setSearch} filterMetal={filterMetal} setFilterMetal={setFilterMetal} filterPrice={filterPrice} setFilterPrice={setFilterPrice} onAddCart={addToCart}/>}
-      {page==="login" && <LoginPage users={users} setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
-      {page==="register" && <RegisterPage users={users} setUsers={setUsers} setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
+      {page==="login" && <LoginPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
+      {page==="register" && <RegisterPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
       {page==="cart" && <CartPage cart={cart} removeFromCart={removeFromCart} updateQty={updateQty} cartTotal={cartTotal} setPage={setPage}/>}
       {page==="checkout" && <CheckoutPage cart={cart} cartTotal={cartTotal} currentUser={currentUser} orders={orders} setOrders={setOrders} setCart={setCart} setPage={setPage} showToast={showToast} products={products} setProducts={setProducts}/>}
       {page==="admin" && isAdmin && <AdminPage setPage={setPage} orders={orders} products={products}/>}
