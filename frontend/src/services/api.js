@@ -1,35 +1,57 @@
 const BASE_URL = "https://shoppingjewelleries.onrender.com/api";
 
-// Normalize a product from backend shape (_id, imageURL) to frontend shape (id, image)
-const normalizeProduct = (p) => ({
-  ...p,
-  id: p._id || p.id,
-  image: p.imageURL || p.image || "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80",
-  name: p.title || p.name,
-  metal: p.category ? p.category.toLowerCase() : (p.metal || "gold"),
-  stock: p.stockQuantity ?? p.stock ?? 1,
-});
+// Normalize a product from backend shape (_id, title, imageURL, stockQuantity) 
+// to frontend shape (id, name, image, stock)
+const normalizeProduct = (p) => {
+  if (!p) return null;
+  const normalized = {
+    ...p,
+    id: p._id || p.id || String(Math.random()),
+    _id: p._id || p.id, // Keep both just in case
+    name: p.title || p.name || "Untitled Piece",
+    description: p.description || "",
+    price: Number(p.price) || 0,
+    image: p.imageURL || p.image || "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80",
+    metal: (p.category || p.metal || "gold").toLowerCase(),
+    category: p.category || p.metal || "other",
+    stock: p.stockQuantity ?? p.stock ?? 0,
+    createdAt: p.createdAt || Date.now(),
+  };
+  return normalized;
+};
 
 export const getProducts = async () => {
-  const res = await fetch(`${BASE_URL}/products`);
-  const data = await res.json();
-  return Array.isArray(data) ? data.map(normalizeProduct) : [];
+  try {
+    const res = await fetch(`${BASE_URL}/products`);
+    if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+    const data = await res.json();
+    console.log("Fetched products:", data);
+    return Array.isArray(data) ? data.map(normalizeProduct) : [];
+  } catch (err) {
+    console.error("getProducts error:", err);
+    return [];
+  }
 };
 
 export const createProduct = async (product, token) => {
   const body = {
     title: product.name,
     description: product.description,
-    price: product.price,
+    price: Number(product.price),
     category: product.metal || product.category,
     imageURL: product.image,
-    stockQuantity: product.stock,
+    stockQuantity: Number(product.stock),
   };
+  console.log("Creating product with body:", body);
   const res = await fetch(`${BASE_URL}/products`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify(body),
   });
+  if (!res.ok) {
+    const errData = await res.json();
+    throw new Error(errData.message || "Create failed");
+  }
   const data = await res.json();
   return normalizeProduct(data);
 };
@@ -38,16 +60,21 @@ export const updateProduct = async (id, product, token) => {
   const body = {
     title: product.name,
     description: product.description,
-    price: product.price,
+    price: Number(product.price),
     category: product.metal || product.category,
     imageURL: product.image,
-    stockQuantity: product.stock,
+    stockQuantity: Number(product.stock),
   };
+  console.log(`Updating product ${id} with body:`, body);
   const res = await fetch(`${BASE_URL}/products/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify(body),
   });
+  if (!res.ok) {
+    const errData = await res.json();
+    throw new Error(errData.message || "Update failed");
+  }
   const data = await res.json();
   return normalizeProduct(data);
 };

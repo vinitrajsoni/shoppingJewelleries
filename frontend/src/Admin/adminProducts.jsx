@@ -36,7 +36,20 @@ function AdminProductsPage({products,setProducts,setPage,showToast}) {
     }
   };
 
-  const startEdit = (p) => { setForm({name:p.name,description:p.description,price:p.price,metal:p.metal,category:p.category,stock:p.stock,image:p.image}); setEditId(p.id); setShowForm(true); window.scrollTo(0,0); };
+  const startEdit = (p) => { 
+    setForm({
+      name: p.name,
+      description: p.description,
+      price: p.price,
+      metal: p.metal,
+      category: p.category,
+      stock: p.stock,
+      image: p.image
+    }); 
+    setEditId(p._id || p.id); 
+    setShowForm(true); 
+    window.scrollTo(0,0); 
+  };
   
   const deleteProduct = async (id) => { 
     if(window.confirm("Delete this product?")){ 
@@ -100,26 +113,26 @@ function AdminProductsPage({products,setProducts,setPage,showToast}) {
       {/* Product Table */}
       <div style={{display:"flex",flexDirection:"column",gap:"1rem"}}>
         {products.map(p=>(
-          <div key={p.id} className="card" style={{display:"flex",gap:"1rem",padding:"1rem",alignItems:"center",flexWrap:"wrap"}}>
+          <div key={p._id || p.id} className="card" style={{display:"flex",gap:"1rem",padding:"1rem",alignItems:"center",flexWrap:"wrap"}}>
             <img src={p.image} alt={p.name} style={{width:64,height:64,objectFit:"cover",borderRadius:2,flexShrink:0}}/>
             <div style={{flex:1,minWidth:160}}>
-              <h4 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1rem",marginBottom:".2rem"}}>{p.name}</h4>
+              <h4 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1rem",marginBottom:".2rem"}}>{p.name || "Untitled"}</h4>
               <div style={{display:"flex",gap:".4rem",flexWrap:"wrap"}}>
                 <span className="tag" style={{background:`${metalColor(p.metal)}22`,color:metalColor(p.metal)}}>{metalLabel(p.metal)}</span>
                 <span className="tag" style={{background:"rgba(255,255,255,.05)",color:G.textMuted}}>{p.category}</span>
               </div>
             </div>
             <div style={{textAlign:"center",minWidth:80}}>
-              <div style={{fontFamily:"'Cormorant Garamond',serif",color:G.gold,fontSize:"1.1rem"}}>{fmt(p.price)}</div>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",color:G.gold,fontSize:"1.1rem"}}>{fmt(p.price || 0)}</div>
               <div style={{fontSize:".72rem",color:G.textMuted}}>price</div>
             </div>
             <div style={{textAlign:"center",minWidth:60}}>
-              <div style={{color:p.stock<=3?G.error:G.success,fontWeight:500}}>{p.stock}</div>
+              <div style={{color:p.stock<=3?G.error:G.success,fontWeight:500}}>{p.stock || 0}</div>
               <div style={{fontSize:".72rem",color:G.textMuted}}>stock</div>
             </div>
             <div style={{display:"flex",gap:".5rem"}}>
               <button className="ghost-btn" style={{fontSize:".72rem",padding:".4rem .8rem"}} onClick={()=>startEdit(p)}>Edit</button>
-              <button onClick={()=>deleteProduct(p.id)} style={{background:"rgba(224,85,85,.1)",border:`1px solid rgba(224,85,85,.3)`,color:G.error,borderRadius:2,padding:".4rem .8rem",fontSize:".72rem",cursor:"pointer",letterSpacing:".06em",textTransform:"uppercase"}}>Delete</button>
+              <button onClick={()=>deleteProduct(p._id || p.id)} style={{background:"rgba(224,85,85,.1)",border:`1px solid rgba(224,85,85,.3)`,color:G.error,borderRadius:2,padding:".4rem .8rem",fontSize:".72rem",cursor:"pointer",letterSpacing:".06em",textTransform:"uppercase"}}>Delete</button>
             </div>
           </div>
         ))}

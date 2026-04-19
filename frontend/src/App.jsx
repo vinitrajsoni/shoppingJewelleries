@@ -1,4 +1,4 @@
-import { Logo, Badge } from "./components/components";
+import { Logo, Badge, Spinner } from "./components/components";
 import { SEED_PRODUCTS, SEED_USERS } from "./components/seedData";
 import HomePage from "./pages/Homepage";
 import { LoginPage, RegisterPage } from "./pages/Authpage";
@@ -176,14 +176,25 @@ export default function App() {
       </nav>
 
       {/* Pages */}
-      {page==="home" && <HomePage products={filteredProducts} recentProducts={recentProducts} recentIds={recentIds} search={search} setSearch={setSearch} filterMetal={filterMetal} setFilterMetal={setFilterMetal} filterPrice={filterPrice} setFilterPrice={setFilterPrice} onAddCart={addToCart}/>}
-      {page==="login" && <LoginPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
-      {page==="register" && <RegisterPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
-      {page==="cart" && <CartPage cart={cart} removeFromCart={removeFromCart} updateQty={updateQty} cartTotal={cartTotal} setPage={setPage}/>}
-      {page==="checkout" && <CheckoutPage cart={cart} cartTotal={cartTotal} currentUser={currentUser} orders={orders} setOrders={setOrders} setCart={setCart} setPage={setPage} showToast={showToast} products={products} setProducts={setProducts}/>}
-      {page==="admin" && isAdmin && <AdminPage setPage={setPage} orders={orders} products={products} users={users} setUsers={setUsers} showToast={showToast}/>}
-      {page==="admin-orders" && isAdmin && <AdminOrdersPage orders={orders} setOrders={setOrders} setPage={setPage} showToast={showToast}/>}
-      {page==="admin-products" && isAdmin && <AdminProductsPage products={products} setProducts={setProducts} setPage={setPage} showToast={showToast}/>}
+      {loading ? (
+        <div style={{height:"80vh",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <div style={{textAlign:"center"}}>
+            <Spinner/>
+            <p style={{marginTop:"1rem",color:G.textMuted,fontSize:".8rem",letterSpacing:".1em"}}>COLLECTING FINE PIECES...</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          {page==="home" && <HomePage products={filteredProducts} recentProducts={recentProducts} recentIds={recentIds} search={search} setSearch={setSearch} filterMetal={filterMetal} setFilterMetal={setFilterMetal} filterPrice={filterPrice} setFilterPrice={setFilterPrice} onAddCart={addToCart}/>}
+          {page==="login" && <LoginPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
+          {page==="register" && <RegisterPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
+          {page==="cart" && <CartPage cart={cart} removeFromCart={removeFromCart} updateQty={updateQty} cartTotal={cartTotal} setPage={setPage}/>}
+          {page==="checkout" && <CheckoutPage cart={cart} cartTotal={cartTotal} currentUser={currentUser} orders={orders} setOrders={setOrders} setCart={setCart} setPage={setPage} showToast={showToast} products={products} setProducts={setProducts}/>}
+          {page==="admin" && isAdmin && <AdminPage setPage={setPage} orders={orders} products={products} users={users} setUsers={setUsers} showToast={showToast}/>}
+          {page==="admin-orders" && isAdmin && <AdminOrdersPage orders={orders} setOrders={setOrders} setPage={setPage} showToast={showToast}/>}
+          {page==="admin-products" && isAdmin && <AdminProductsPage products={products} setProducts={setProducts} setPage={setPage} showToast={showToast}/>}
+        </>
+      )}
     </div>
   );
 }
