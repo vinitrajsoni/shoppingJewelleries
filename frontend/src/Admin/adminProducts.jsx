@@ -4,6 +4,7 @@ import { G } from "../App";
 import { SectionHead } from "../pages/Homepage";
 import { Field } from "../pages/Authpage";
 import { fmt, metalColor, metalLabel } from "../components/Helpers";
+import { createProduct, updateProduct, deleteProduct as apiDeleteProduct } from "../services/api";
 // ── Admin Products ─────────────────────────────────────────────────────────────
 function AdminProductsPage({products,setProducts,setPage,showToast}) {
   const blank = {name:"",description:"",price:"",metal:"gold",category:"ring",stock:"",image:""};
@@ -14,21 +15,41 @@ function AdminProductsPage({products,setProducts,setPage,showToast}) {
 
   const resetForm = () => { setForm(blank); setEditId(null); setShowForm(false); };
 
-  const saveProduct = () => {
+  const saveProduct = async () => {
     if(!form.name||!form.price||!form.stock){showToast("Name, price & stock required","error");return;}
-    if(editId) {
-      setProducts(ps=>ps.map(p=>p.id===editId?{...p,...form,price:+form.price,stock:+form.stock}:p));
-      showToast("Product updated");
-    } else {
-      const newP = {...form,id:Date.now(),price:+form.price,stock:+form.stock,createdAt:Date.now(),image:form.image||"https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80"};
-      setProducts(ps=>[newP,...ps]);
-      showToast("Product added");
+    const token = localStorage.getItem("userToken");
+    
+    try {
+      if(editId) {
+        const updated = await updateProduct(editId, form, token);
+        setProducts(ps=>ps.map(p=>p.id===editId ? updated : p));
+        showToast("Product updated");
+      } else {
+        const created = await createProduct(form, token);
+        setProducts(ps=>[created,...ps]);
+        showToast("Product added");
+      }
+      resetForm();
+    } catch (error) {
+      showToast("Error saving product","error");
+      console.error(error);
     }
-    resetForm();
   };
 
   const startEdit = (p) => { setForm({name:p.name,description:p.description,price:p.price,metal:p.metal,category:p.category,stock:p.stock,image:p.image}); setEditId(p.id); setShowForm(true); window.scrollTo(0,0); };
-  const deleteProduct = (id) => { if(window.confirm("Delete this product?")){ setProducts(ps=>ps.filter(p=>p.id!==id)); showToast("Product deleted"); } };
+  
+  const deleteProduct = async (id) => { 
+    if(window.confirm("Delete this product?")){ 
+      const token = localStorage.getItem("userToken");
+      try {
+        await apiDeleteProduct(id, token);
+        setProducts(ps=>ps.filter(p=>p.id!==id)); 
+        showToast("Product deleted"); 
+      } catch (error) {
+        showToast("Error deleting product","error");
+      }
+    } 
+  };
 
   return (
     <div style={{maxWidth:1100,margin:"0 auto",padding:"2rem"}}>

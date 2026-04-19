@@ -8,6 +8,7 @@ import CheckoutPage from "./pages/Checkout";
 import AdminPage from "./Admin/adminDashboard";
 import AdminOrdersPage from "./Admin/adminOrders";
 import AdminProductsPage from "./Admin/adminProducts";
+import { getProducts } from "./services/api";
 
 import { useState, useEffect, useRef } from "react";
 
@@ -54,9 +55,7 @@ const css = `
 // ── Main App ───────────────────────────────────────────────────────────────────
 export default function App() {
   // Persisted state
-  const [products, setProducts] = useState(() => {
-    try { const s = localStorage.getItem("zehura_products"); return s ? JSON.parse(s) : SEED_PRODUCTS; } catch { return SEED_PRODUCTS; }
-  });
+  const [products, setProducts] = useState([]);
   const [users, setUsers] = useState(() => {
     try { const s = localStorage.getItem("zehura_users"); return s ? JSON.parse(s) : SEED_USERS; } catch { return SEED_USERS; }
   });
@@ -68,14 +67,29 @@ export default function App() {
   const [page, setPage] = useState("home"); // home | login | register | cart | checkout | admin | admin-orders | admin-products
   const [cart, setCart] = useState([]);
   const [toast, setToast] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Search & Filter
   const [search, setSearch] = useState("");
   const [filterMetal, setFilterMetal] = useState("all");
   const [filterPrice, setFilterPrice] = useState("all");
 
+  // Fetch products from backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getProducts();
+        setProducts(data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   // Persist
-  useEffect(()=>{ localStorage.setItem("zehura_products",JSON.stringify(products)); },[products]);
   useEffect(()=>{ localStorage.setItem("zehura_users",JSON.stringify(users)); },[users]);
   useEffect(()=>{ localStorage.setItem("zehura_orders",JSON.stringify(orders)); },[orders]);
 

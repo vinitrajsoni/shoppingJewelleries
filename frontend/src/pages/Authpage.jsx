@@ -3,7 +3,7 @@ import { G } from "../App";
 import axios from "axios";
 import { GoogleLogin } from '@react-oauth/google';
 
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL = "https://shoppingjewelleries.onrender.com/api/auth";
 
 function LoginPage({setCurrentUser,setPage,showToast}) {
   const [email,setEmail]=useState("");
