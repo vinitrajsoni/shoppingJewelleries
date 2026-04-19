@@ -59,11 +59,39 @@ export const deleteProduct = async (id, token) => {
   });
 };
 
-export const createOrder = async (order) => {
+export const createOrder = async (order, token) => {
   const res = await fetch(`${BASE_URL}/orders`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify(order),
   });
   return res.json();
+};
+
+export const getOrders = async (token) => {
+  const res = await fetch(`${BASE_URL}/orders`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+};
+
+export const deleteOrder = async (id, token) => {
+  await fetch(`${BASE_URL}/orders/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const getUsers = async (token) => {
+  const res = await fetch(`${BASE_URL}/auth/users`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+};
+
+export const deleteUser = async (id, token) => {
+  await fetch(`${BASE_URL}/auth/users/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
 };

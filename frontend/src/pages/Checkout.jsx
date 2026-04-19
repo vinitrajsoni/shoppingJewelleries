@@ -3,26 +3,54 @@ import { G } from "../App";
 import { SectionHead } from "./Homepage";
 import { Field } from "./Authpage";
 import { fmt } from "../components/Helpers";
+import { createOrder } from "../services/api";
 
 function CheckoutPage({cart,cartTotal,currentUser,orders,setOrders,setCart,setPage,showToast,products,setProducts}) {
   const [form,setForm]=useState({name:currentUser?.name||"",email:currentUser?.email||"",mobile:"",address:"",city:"",state:"",pincode:""});
   const [placed,setPlaced]=useState(false);
   const set = k => e => setForm(f=>({...f,[k]:e.target.value}));
 
-  const placeOrder = () => {
+  const placeOrder = async () => {
     const req = ["name","email","mobile","address","city","state","pincode"];
     if(req.some(k=>!form[k])){showToast("Please fill all fields","error");return;}
     if(!/^\d{10}$/.test(form.mobile)){showToast("Enter valid 10-digit mobile","error");return;}
     if(!/^\d{6}$/.test(form.pincode)){showToast("Enter valid 6-digit pincode","error");return;}
-    const order = {id:"ZH"+Date.now(),userId:currentUser.id,userName:currentUser.name,items:cart,total:cartTotal,address:form,status:"Confirmed",createdAt:Date.now()};
-    setOrders(o=>[order,...o]);
-    // Reduce stock
-    setProducts(ps=>ps.map(p=>{
-      const ci=cart.find(i=>i.id===p.id);
-      return ci?{...p,stock:Math.max(0,p.stock-ci.qty)}:p;
-    }));
-    setCart([]);
-    setPlaced(true);
+    
+    const token = localStorage.getItem("userToken");
+    const orderData = {
+      orderItems: cart.map(i => ({
+        name: i.name,
+        qty: i.qty,
+        image: i.image,
+        price: i.price,
+        product: i.id
+      })),
+      shippingAddress: {
+        address: form.address,
+        city: form.city,
+        postalCode: form.pincode,
+        country: "India", // Default or add to form
+        phone: form.mobile
+      },
+      paymentMethod: "Cash on Delivery", // Default
+      totalPrice: cartTotal
+    };
+
+    try {
+      await createOrder(orderData, token);
+      
+      // Reduce stock locally (Backend should handle this too in production)
+      setProducts(ps=>ps.map(p=>{
+        const ci=cart.find(i=>i.id===p.id);
+        return ci?{...p,stock:Math.max(0,p.stock-ci.qty)}:p;
+      }));
+      setCart([]);
+      setPlaced(true);
+      showToast("Order placed successfully!");
+    } catch (error) {
+      showToast("Failed to place order","error");
+      console.error(error);
+    }
   };
 
   if(placed) return (

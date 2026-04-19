@@ -8,7 +8,7 @@ import CheckoutPage from "./pages/Checkout";
 import AdminPage from "./Admin/adminDashboard";
 import AdminOrdersPage from "./Admin/adminOrders";
 import AdminProductsPage from "./Admin/adminProducts";
-import { getProducts } from "./services/api";
+import { getProducts, getOrders, getUsers } from "./services/api";
 
 import { useState, useEffect, useRef } from "react";
 
@@ -56,12 +56,8 @@ const css = `
 export default function App() {
   // Persisted state
   const [products, setProducts] = useState([]);
-  const [users, setUsers] = useState(() => {
-    try { const s = localStorage.getItem("zehura_users"); return s ? JSON.parse(s) : SEED_USERS; } catch { return SEED_USERS; }
-  });
-  const [orders, setOrders] = useState(() => {
-    try { const s = localStorage.getItem("zehura_orders"); return s ? JSON.parse(s) : []; } catch { return []; }
-  });
+  const [users, setUsers] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   const [currentUser, setCurrentUser] = useState(null);
   const [page, setPage] = useState("home"); // home | login | register | cart | checkout | admin | admin-orders | admin-products
@@ -76,22 +72,37 @@ export default function App() {
 
   // Fetch products from backend
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProducts = async () => {
       try {
         const data = await getProducts();
         setProducts(data);
       } catch (err) {
-        console.error("Fetch error:", err);
+        console.error("Fetch products error:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
+    fetchProducts();
   }, []);
 
-  // Persist
-  useEffect(()=>{ localStorage.setItem("zehura_users",JSON.stringify(users)); },[users]);
-  useEffect(()=>{ localStorage.setItem("zehura_orders",JSON.stringify(orders)); },[orders]);
+  // Fetch Admin Data (Users & Orders)
+  useEffect(() => {
+    if (currentUser?.role === "admin") {
+      const token = localStorage.getItem("userToken");
+      const fetchAdminData = async () => {
+        try {
+          const [u, o] = await Promise.all([getUsers(token), getOrders(token)]);
+          setUsers(Array.isArray(u) ? u : []);
+          setOrders(Array.isArray(o) ? o : []);
+        } catch (err) {
+          console.error("Fetch admin data error:", err);
+        }
+      };
+      fetchAdminData();
+    }
+  }, [currentUser]);
+
+  // Persist (Only for non-database items if any, currently none needed for users/orders/products)
 
   const showToast = (msg,type="success") => {
     setToast({msg,type});
@@ -170,8 +181,8 @@ export default function App() {
       {page==="register" && <RegisterPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
       {page==="cart" && <CartPage cart={cart} removeFromCart={removeFromCart} updateQty={updateQty} cartTotal={cartTotal} setPage={setPage}/>}
       {page==="checkout" && <CheckoutPage cart={cart} cartTotal={cartTotal} currentUser={currentUser} orders={orders} setOrders={setOrders} setCart={setCart} setPage={setPage} showToast={showToast} products={products} setProducts={setProducts}/>}
-      {page==="admin" && isAdmin && <AdminPage setPage={setPage} orders={orders} products={products}/>}
-      {page==="admin-orders" && isAdmin && <AdminOrdersPage orders={orders} setPage={setPage}/>}
+      {page==="admin" && isAdmin && <AdminPage setPage={setPage} orders={orders} products={products} users={users} setUsers={setUsers} showToast={showToast}/>}
+      {page==="admin-orders" && isAdmin && <AdminOrdersPage orders={orders} setOrders={setOrders} setPage={setPage} showToast={showToast}/>}
       {page==="admin-products" && isAdmin && <AdminProductsPage products={products} setProducts={setProducts} setPage={setPage} showToast={showToast}/>}
     </div>
   );
