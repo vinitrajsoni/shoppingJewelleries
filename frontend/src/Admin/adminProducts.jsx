@@ -16,7 +16,10 @@ function AdminProductsPage({products,setProducts,setPage,showToast}) {
   const resetForm = () => { setForm(blank); setEditId(null); setShowForm(false); };
 
   const saveProduct = async () => {
-    if(!form.name||!form.price||!form.stock){showToast("Name, price & stock required","error");return;}
+    if(!form.name || !form.price || !form.stock || !form.description){
+      showToast("Name, price, stock & description are required","error");
+      return;
+    }
     const token = localStorage.getItem("userToken");
     
     try {
