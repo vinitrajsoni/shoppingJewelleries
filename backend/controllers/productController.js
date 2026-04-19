@@ -33,13 +33,14 @@ const getProductById = async (req, res) => {
 // @access  Private/Admin
 const createProduct = async (req, res) => {
   try {
-    const { title, description, price, category, imageURL, stockQuantity } = req.body;
+    const { title, description, price, category, metal, imageURL, stockQuantity } = req.body;
 
     const product = new Product({
       title,
       description,
       price,
       category,
+      metal,
       imageURL,
       stockQuantity,
     });
@@ -56,7 +57,7 @@ const createProduct = async (req, res) => {
 // @access  Private/Admin
 const updateProduct = async (req, res) => {
   try {
-    const { title, description, price, category, imageURL, stockQuantity } = req.body;
+    const { title, description, price, category, metal, imageURL, stockQuantity } = req.body;
 
     const product = await Product.findById(req.params.id);
 
@@ -65,6 +66,7 @@ const updateProduct = async (req, res) => {
       product.description = description || product.description;
       product.price = price || product.price;
       product.category = category || product.category;
+      product.metal = metal || product.metal;
       product.imageURL = imageURL || product.imageURL;
       product.stockQuantity = stockQuantity !== undefined ? stockQuantity : product.stockQuantity;
 

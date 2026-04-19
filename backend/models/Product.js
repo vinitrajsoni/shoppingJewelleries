@@ -18,6 +18,11 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    metal: {
+      type: String,
+      required: true,
+      default: 'gold'
+    },
     imageURL: {
       type: String,
       required: true,

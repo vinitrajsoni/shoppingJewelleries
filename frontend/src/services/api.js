@@ -12,8 +12,8 @@ const normalizeProduct = (p) => {
     description: p.description || "",
     price: Number(p.price) || 0,
     image: p.imageURL || p.image || "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80",
-    metal: (p.category || p.metal || "gold").toLowerCase(),
-    category: p.category || p.metal || "other",
+    metal: (p.metal || "gold").toLowerCase(),
+    category: p.category || "ring",
     stock: p.stockQuantity ?? p.stock ?? 0,
     createdAt: p.createdAt || Date.now(),
   };
@@ -38,7 +38,8 @@ export const createProduct = async (product, token) => {
     title: product.name,
     description: product.description,
     price: Number(product.price),
-    category: product.metal || product.category,
+    category: product.category,
+    metal: product.metal,
     imageURL: product.image,
     stockQuantity: Number(product.stock),
   };
@@ -61,7 +62,8 @@ export const updateProduct = async (id, product, token) => {
     title: product.name,
     description: product.description,
     price: Number(product.price),
-    category: product.metal || product.category,
+    category: product.category,
+    metal: product.metal,
     imageURL: product.image,
     stockQuantity: Number(product.stock),
   };
