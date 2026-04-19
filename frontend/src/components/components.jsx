@@ -4,7 +4,7 @@ export function Logo() {
   return (
     <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
       <div style={{width:32,height:32,border:`1.5px solid ${G.gold}`,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem"}}>◆</div>
-      <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.4rem",fontWeight:300,letterSpacing:".1em",color:G.gold}}>J.K. JEWELLERS</span>
+      <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.4rem",fontWeight:300,letterSpacing:".1em",color:G.gold}}>H.P. JEWELLERS</span>
     </div>
   );
 }
