@@ -84,12 +84,12 @@ function AdminProductsPage({products,setProducts,setPage,showToast}) {
         <div className="card" style={{padding:"1.5rem",marginBottom:"2rem"}}>
           <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.2rem",marginBottom:"1.2rem"}}>{editId?"Edit Product":"New Product"}</h3>
           <div style={{display:"grid",gap:"1rem"}}>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem"}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(250px, 1fr))",gap:"1rem"}}>
               <Field label="Product Name"><input className="input-field" value={form.name} onChange={set("name")} placeholder="Empress Gold Bangle"/></Field>
               <Field label="Image URL"><input className="input-field" value={form.image} onChange={set("image")} placeholder="https://…"/></Field>
             </div>
             <Field label="Description"><textarea className="input-field" value={form.description} onChange={set("description")} placeholder="Describe this piece…" style={{resize:"vertical",minHeight:60}}/></Field>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:"1rem"}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(140px, 1fr))",gap:"1rem"}}>
               <Field label="Price (₹)"><input className="input-field" type="number" value={form.price} onChange={set("price")} placeholder="45000"/></Field>
               <Field label="Stock"><input className="input-field" type="number" value={form.stock} onChange={set("stock")} placeholder="10"/></Field>
               <Field label="Metal">

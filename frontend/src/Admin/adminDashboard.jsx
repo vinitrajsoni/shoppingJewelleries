@@ -39,7 +39,7 @@ function AdminPage({setPage,orders,products,users,setUsers,showToast}) {
         ))}
       </div>
       
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",marginBottom:"2.5rem"}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:"1rem",marginBottom:"2.5rem"}}>
         <div className="card" style={{padding:"2rem",textAlign:"center",cursor:"pointer"}} onClick={()=>setPage("admin-orders")}>
           <div style={{fontSize:"2.5rem",marginBottom:"1rem"}}>📋</div>
           <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.3rem",marginBottom:".5rem"}}>View All Orders</h3>

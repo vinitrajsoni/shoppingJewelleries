@@ -49,6 +49,31 @@ const css = `
   .tag{display:inline-block;padding:.2rem .6rem;border-radius:2px;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
   .divider{width:100%;height:1px;background:${G.border};margin:1.5rem 0}
   label{font-size:.78rem;color:${G.textMuted};letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem;display:block}
+
+  .nav-container { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1200px; margin: 0 auto; }
+  .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+  .menu-toggle { display: none; background: none; border: none; color: ${G.gold}; font-size: 1.5rem; cursor: pointer; padding: 0.5rem; line-height: 1; }
+  
+  @media (max-width: 768px) {
+    .menu-toggle { display: block; }
+    .nav-links { 
+      display: none; 
+      position: absolute; 
+      top: 100%; 
+      left: 0; 
+      right: 0; 
+      background: rgba(26, 18, 8, 0.98); 
+      flex-direction: column; 
+      padding: 1.5rem; 
+      gap: 1.2rem; 
+      border-bottom: 1px solid ${G.border};
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .nav-links.open { display: flex; }
+    .nav-links > * { width: 100%; text-align: center; display: flex; justify-content: center; align-items: center; }
+    .nav-links .ghost-btn, .nav-links .gold-btn { padding: .8rem; }
+  }
 `;
 
 
@@ -64,6 +89,7 @@ export default function App() {
   const [cart, setCart] = useState([]);
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Search & Filter
   const [search, setSearch] = useState("");
@@ -101,6 +127,11 @@ export default function App() {
       fetchAdminData();
     }
   }, [currentUser]);
+
+  // Close menu on page change
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [page]);
 
   // Persist (Only for non-database items if any, currently none needed for users/orders/products)
 
@@ -154,24 +185,31 @@ export default function App() {
       )}
 
       {/* Navbar */}
-      <nav style={{position:"sticky",top:0,zIndex:100,background:"rgba(26,18,8,.95)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${G.border}`,padding:"1rem 2rem",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <button onClick={()=>setPage("home")} style={{background:"none",border:"none",cursor:"pointer"}}><Logo/></button>
-        <div style={{display:"flex",alignItems:"center",gap:"1.5rem"}}>
-          {!currentUser ? (
-            <>
-              <button className="ghost-btn" onClick={()=>setPage("login")}>Login</button>
-              <button className="gold-btn" onClick={()=>setPage("register")}>Register</button>
-            </>
-          ) : (
-            <>
-              <span style={{fontSize:".82rem",color:G.textMuted}}>Hi, {(currentUser.name || currentUser.email || "User").split(" ")[0]}</span>
-              {isAdmin && <button className="ghost-btn" onClick={()=>setPage("admin")}>Admin Panel</button>}
-              <button onClick={()=>setPage("cart")} style={{background:"none",border:"none",position:"relative",color:G.cream,fontSize:"1.2rem",cursor:"pointer"}}>
-                🛒<Badge count={cartCount}/>
-              </button>
-              <button className="ghost-btn" onClick={logout} style={{fontSize:".72rem",padding:".5rem 1rem"}}>Logout</button>
-            </>
-          )}
+      <nav style={{position:"sticky",top:0,zIndex:100,background:"rgba(26,18,8,.95)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${G.border}`,padding:"1rem 1.5rem"}}>
+        <div className="nav-container">
+          <button onClick={()=>{setPage("home"); setMenuOpen(false)}} style={{background:"none",border:"none",cursor:"pointer"}}><Logo/></button>
+          
+          <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
+            {menuOpen ? "✕" : "☰"}
+          </button>
+
+          <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
+            {!currentUser ? (
+              <>
+                <button className="ghost-btn" onClick={()=>setPage("login")}>Login</button>
+                <button className="gold-btn" onClick={()=>setPage("register")}>Register</button>
+              </>
+            ) : (
+              <>
+                <span style={{fontSize:".82rem",color:G.textMuted}}>Hi, {(currentUser.name || currentUser.email || "User").split(" ")[0]}</span>
+                {isAdmin && <button className="ghost-btn" onClick={()=>setPage("admin")}>Admin Panel</button>}
+                <button onClick={()=>setPage("cart")} style={{background:"none",border:"none",position:"relative",color:G.cream,fontSize:"1.2rem",cursor:"pointer", display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  🛒<Badge count={cartCount}/>
+                </button>
+                <button className="ghost-btn" onClick={logout} style={{fontSize:".72rem",padding:".5rem 1rem"}}>Logout</button>
+              </>
+            )}
+          </div>
         </div>
       </nav>
 

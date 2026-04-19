@@ -38,7 +38,7 @@ function AdminOrdersPage({orders,setOrders,setPage,showToast}) {
                   <button onClick={()=>handleDeleteOrder(o._id)} style={{background:"rgba(224,85,85,.1)",border:`1px solid rgba(224,85,85,.3)`,color:G.error,borderRadius:2,padding:".4rem .8rem",fontSize:".72rem",cursor:"pointer"}}>Delete</button>
                 </div>
               </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",fontSize:".82rem"}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(200px, 1fr))",gap:"1rem",fontSize:".82rem"}}>
                 <div>
                   <p style={{color:G.textMuted,marginBottom:".2rem"}}>Customer</p>
                   <p>{o.user?.name || "Guest"}</p>
