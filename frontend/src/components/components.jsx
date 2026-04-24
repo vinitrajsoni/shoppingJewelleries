@@ -35,7 +35,7 @@ export function ProductCard({product, onAddCart, onView, isNew}) {
         <p style={{fontSize:".78rem",color:G.textMuted,lineHeight:1.5,margin:".5rem 0 .8rem",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{product.description}</p>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.25rem",color:G.gold}}>{fmt(product.price)}</span>
-          <button className="gold-btn" style={{padding:".5rem 1rem",fontSize:".72rem"}} onClick={(e)=>{e.stopPropagation(); onAddCart(product)}}>
+          <button className="gold-btn trace-btn" style={{padding:".5rem 1rem",fontSize:".72rem"}} onClick={(e)=>{e.stopPropagation(); onAddCart(product)}}>
             Add to Cart
           </button>
         </div>

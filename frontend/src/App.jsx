@@ -40,6 +40,7 @@ const css = `
   .fadeUp{animation:fadeUp .5s ease forwards}
   .gold-btn{background:linear-gradient(135deg,${G.goldDark},${G.gold});color:${G.dark};font-weight:500;letter-spacing:.08em;text-transform:uppercase;font-size:.78rem;padding:.7rem 1.8rem;border-radius:2px;transition:all .25s;box-shadow:0 2px 12px rgba(201,168,76,.25)}
   .gold-btn:hover{box-shadow:0 4px 20px rgba(201,168,76,.45);transform:translateY(-1px)}
+  .gold-btn.trace-btn { background: ${G.dark}; }
   .ghost-btn{background:transparent;color:${G.gold};border:1px solid ${G.border};font-weight:400;letter-spacing:.08em;text-transform:uppercase;font-size:.75rem;padding:.65rem 1.6rem;border-radius:2px;transition:all .25s}
   .ghost-btn:hover{border-color:${G.gold};color:${G.goldLight}}
   .input-field{width:100%;background:rgba(255,255,255,.04);border:1px solid ${G.border};border-radius:2px;padding:.75rem 1rem;color:${G.cream};font-size:.9rem;transition:border .2s}
@@ -98,6 +99,53 @@ const css = `
   .thumbnail { width: 60px; height: 60px; object-fit: cover; border-radius: 2px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
   .thumbnail.active { border-color: ${G.gold}; opacity: 1; }
   .thumbnail:hover { opacity: 0.8; }
+
+  @keyframes borderTrace {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .trace-btn {
+    position: relative;
+    background: ${G.dark};
+    color: ${G.gold} !important;
+    border: 1px solid ${G.border};
+    overflow: hidden;
+    transition: all 0.3s;
+    z-index: 1;
+  }
+  .trace-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, ${G.gold}, transparent);
+    background-size: 200% 100%;
+    animation: borderTrace 3s linear infinite;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .trace-btn:hover {
+    box-shadow: 0 0 20px rgba(201,168,76,0.3);
+    border-color: ${G.gold};
+  }
+
+  .preloader {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: ${G.dark}; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; z-index: 10000;
+  }
+  .preloader-logo {
+    transform: scale(1.5);
+    animation: pulse 2s ease-in-out infinite;
+    margin-bottom: 2rem;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1.5); opacity: 0.5; }
+    50% { transform: scale(1.6); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0.5; }
+  }
 `;
 
 
@@ -115,6 +163,12 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showPreloader, setShowPreloader] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowPreloader(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Search & Filter
   const [search, setSearch] = useState("");
@@ -202,6 +256,19 @@ export default function App() {
     <div style={{minHeight:"100vh",fontFamily:"'Jost',sans-serif"}}>
       <style>{css}</style>
 
+      {/* Preloader */}
+      {showPreloader && (
+        <div className="preloader">
+          <div className="preloader-logo">
+            <Logo />
+          </div>
+          <div style={{width:150, height:1, background:G.border, position:"relative", overflow:"hidden"}}>
+            <div style={{position:"absolute", top:0, left:0, height:"100%", width:"50%", background:G.gold, animation:"borderTrace 2s linear infinite"}}/>
+          </div>
+          <p style={{marginTop:"1.5rem", fontSize:".7rem", color:G.textMuted, letterSpacing:".3em", textTransform:"uppercase"}}>Excellence in every detail</p>
+        </div>
+      )}
+
       {/* Toast */}
       {toast && (
         <div style={{position:"fixed",top:20,right:20,zIndex:9999,background:toast.type==="error"?"#3a0a0a":"#0a2010",border:`1px solid ${toast.type==="error"?G.error:G.success}`,color:toast.type==="error"?G.error:G.success,padding:".75rem 1.2rem",borderRadius:4,fontSize:".85rem",maxWidth:280,animation:"fadeUp .3s ease"}}>
@@ -279,7 +346,7 @@ export default function App() {
               <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginTop:"auto"}}>
                 <span style={{fontFamily:"'Cormorant Garamond',serif", fontSize:"2rem", color:G.gold}}>{(selectedProduct.price || 0).toLocaleString('en-IN', {style: 'currency', currency: 'INR', maximumFractionDigits: 0})}</span>
                 <button 
-                  className="gold-btn" 
+                  className="gold-btn trace-btn" 
                   style={{padding:"1rem 2rem"}}
                   onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }}
                 >
