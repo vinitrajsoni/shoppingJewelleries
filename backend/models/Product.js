@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema(
   {
-    title: {
+    name: {
       type: String,
       required: true,
     },
@@ -23,11 +23,11 @@ const productSchema = new mongoose.Schema(
       required: true,
       default: 'gold'
     },
-    imageURL: {
-      type: String,
+    images: {
+      type: [String],
       required: true,
     },
-    stockQuantity: {
+    stock: {
       type: Number,
       default: 1,
     },

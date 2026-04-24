@@ -17,7 +17,7 @@ function CartPage({cart,removeFromCart,updateQty,cartTotal,setPage}) {
         <div style={{display:"flex",flexDirection:"column",gap:"1rem"}}>
           {cart.map(item=>(
             <div key={item.id} className="card" style={{display:"flex",gap:"1rem",padding:"1rem"}}>
-              <img src={item.image} alt={item.name} style={{width:80,height:80,objectFit:"cover",borderRadius:2}}/>
+              <img src={item.images && item.images[0]} alt={item.name} style={{width:80,height:80,objectFit:"cover",borderRadius:2}}/>
               <div style={{flex:1}}>
                 <h4 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1rem",marginBottom:".2rem"}}>{item.name}</h4>
                 <span className="tag" style={{background:`${metalColor(item.metal)}22`,color:metalColor(item.metal),marginBottom:".5rem"}}>{metalLabel(item.metal)}</span>

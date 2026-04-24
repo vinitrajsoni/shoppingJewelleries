@@ -7,28 +7,39 @@ import { fmt, metalColor, metalLabel } from "../components/Helpers";
 import { createProduct, updateProduct, deleteProduct as apiDeleteProduct } from "../services/api";
 // ── Admin Products ─────────────────────────────────────────────────────────────
 function AdminProductsPage({products,setProducts,setPage,showToast}) {
-  const blank = {name:"",description:"",price:"",metal:"gold",category:"ring",stock:"",image:""};
-  const [form,setForm]=useState(blank);
+  const blank = {name:"",description:"",price:"",metal:"gold",category:"ring",stock:"",images:[]};
+  const [form,setForm]=useState({...blank, imageString: ""});
   const [editId,setEditId]=useState(null);
   const [showForm,setShowForm]=useState(false);
-  const set = k => e => setForm(f=>({...f,[k]:e.target.value}));
+  
+  const set = k => e => {
+    const val = e.target.value;
+    if (k === "imageString") {
+      setForm(f => ({...f, imageString: val, images: val.split(",").map(s => s.trim()).filter(s => s)}));
+    } else {
+      setForm(f=>({...f,[k]:val}));
+    }
+  };
 
-  const resetForm = () => { setForm(blank); setEditId(null); setShowForm(false); };
+  const resetForm = () => { setForm({...blank, imageString: ""}); setEditId(null); setShowForm(false); };
 
   const saveProduct = async () => {
-    if(!form.name || !form.price || !form.stock || !form.description){
-      showToast("Name, price, stock & description are required","error");
+    if(!form.name || !form.price || !form.stock || !form.description || form.images.length === 0){
+      showToast("Name, price, stock, description & at least one image are required","error");
       return;
     }
     const token = localStorage.getItem("userToken");
     
+    // Create a payload without the temporary imageString
+    const { imageString, ...payload } = form;
+
     try {
       if(editId) {
-        const updated = await updateProduct(editId, form, token);
-        setProducts(ps=>ps.map(p=>p.id===editId ? updated : p));
+        const updated = await updateProduct(editId, payload, token);
+        setProducts(ps=>ps.map(p=>(p._id===editId || p.id===editId) ? updated : p));
         showToast("Product updated");
       } else {
-        const created = await createProduct(form, token);
+        const created = await createProduct(payload, token);
         setProducts(ps=>[created,...ps]);
         showToast("Product added");
       }
@@ -47,7 +58,8 @@ function AdminProductsPage({products,setProducts,setPage,showToast}) {
       metal: p.metal,
       category: p.category,
       stock: p.stock,
-      image: p.image
+      images: p.images || [],
+      imageString: (p.images || []).join(", ")
     }); 
     setEditId(p._id || p.id); 
     setShowForm(true); 
@@ -59,7 +71,7 @@ function AdminProductsPage({products,setProducts,setPage,showToast}) {
       const token = localStorage.getItem("userToken");
       try {
         await apiDeleteProduct(id, token);
-        setProducts(ps=>ps.filter(p=>p.id!==id)); 
+        setProducts(ps=>ps.filter(p=>(p._id!==id && p.id!==id))); 
         showToast("Product deleted"); 
       } catch (error) {
         showToast("Error deleting product","error");
@@ -74,7 +86,7 @@ function AdminProductsPage({products,setProducts,setPage,showToast}) {
           <button className="ghost-btn" onClick={()=>setPage("admin")} style={{fontSize:".72rem",padding:".4rem .9rem"}}>← Back</button>
           <SectionHead title="Manage Products" sub={`${products.length} products`}/>
         </div>
-        <button className="gold-btn" onClick={()=>{setShowForm(!showForm);setEditId(null);setForm(blank);}}>
+        <button className="gold-btn" onClick={()=>{setShowForm(!showForm);setEditId(null);setForm({...blank, imageString: ""});}}>
           {showForm?"Cancel":"+ Add Product"}
         </button>
       </div>
@@ -86,7 +98,7 @@ function AdminProductsPage({products,setProducts,setPage,showToast}) {
           <div style={{display:"grid",gap:"1rem"}}>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(250px, 1fr))",gap:"1rem"}}>
               <Field label="Product Name"><input className="input-field" value={form.name} onChange={set("name")} placeholder="Empress Gold Bangle"/></Field>
-              <Field label="Image URL"><input className="input-field" value={form.image} onChange={set("image")} placeholder="https://…"/></Field>
+              <Field label="Image URLs (comma separated)"><input className="input-field" value={form.imageString} onChange={set("imageString")} placeholder="url1, url2, url3"/></Field>
             </div>
             <Field label="Description"><textarea className="input-field" value={form.description} onChange={set("description")} placeholder="Describe this piece…" style={{resize:"vertical",minHeight:60}}/></Field>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(140px, 1fr))",gap:"1rem"}}>
@@ -117,7 +129,7 @@ function AdminProductsPage({products,setProducts,setPage,showToast}) {
       <div style={{display:"flex",flexDirection:"column",gap:"1rem"}}>
         {products.map(p=>(
           <div key={p._id || p.id} className="card" style={{display:"flex",gap:"1rem",padding:"1rem",alignItems:"center",flexWrap:"wrap"}}>
-            <img src={p.image} alt={p.name} style={{width:64,height:64,objectFit:"cover",borderRadius:2,flexShrink:0}}/>
+            <img src={p.images && p.images[0]} alt={p.name} style={{width:64,height:64,objectFit:"cover",borderRadius:2,flexShrink:0}}/>
             <div style={{flex:1,minWidth:160}}>
               <h4 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1rem",marginBottom:".2rem"}}>{p.name || "Untitled"}</h4>
               <div style={{display:"flex",gap:".4rem",flexWrap:"wrap"}}>

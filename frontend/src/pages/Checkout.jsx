@@ -21,7 +21,7 @@ function CheckoutPage({cart,cartTotal,currentUser,orders,setOrders,setCart,setPa
       orderItems: cart.map(i => ({
         name: i.name,
         qty: i.qty,
-        image: i.image,
+        image: i.images && i.images[0],
         price: i.price,
         product: i.id
       })),

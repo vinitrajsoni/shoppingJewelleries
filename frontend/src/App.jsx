@@ -74,6 +74,30 @@ const css = `
     .nav-links > * { width: 100%; text-align: center; display: flex; justify-content: center; align-items: center; }
     .nav-links .ghost-btn, .nav-links .gold-btn { padding: .8rem; }
   }
+
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
+    padding: 1.5rem; animation: fadeIn 0.3s ease;
+  }
+  .modal-content {
+    background: ${G.darkCard}; border: 1px solid ${G.border}; border-radius: 8px;
+    width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto;
+    position: relative; animation: slideUp 0.4s ease; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding: 2.5rem;
+  }
+  @media (max-width: 768px) {
+    .modal-content { grid-template-columns: 1fr; padding: 1.5rem; gap: 1.5rem; }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .image-gallery { display: flex; flex-direction: column; gap: 1rem; }
+  .main-image { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; border: 1px solid ${G.border}; }
+  .thumbnail-list { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; }
+  .thumbnail { width: 60px; height: 60px; object-fit: cover; border-radius: 2px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
+  .thumbnail.active { border-color: ${G.gold}; opacity: 1; }
+  .thumbnail:hover { opacity: 0.8; }
 `;
 
 
@@ -90,6 +114,7 @@ export default function App() {
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   // Search & Filter
   const [search, setSearch] = useState("");
@@ -212,6 +237,60 @@ export default function App() {
           </div>
         </div>
       </nav>
+      
+      {/* Product Detail Modal */}
+      {selectedProduct && (
+        <div className="modal-overlay" onClick={() => setSelectedProduct(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button 
+              onClick={() => setSelectedProduct(null)}
+              style={{position:"absolute", top:15, right:15, background:"none", border:"none", color:G.textMuted, fontSize:"1.5rem", cursor:"pointer"}}
+            >✕</button>
+            
+            <div className="image-gallery">
+              <img 
+                src={(selectedProduct.images && selectedProduct.images[0]) || ""} 
+                alt={selectedProduct.name} 
+                className="main-image"
+                id="main-img-view"
+              />
+              <div className="thumbnail-list">
+                {selectedProduct.images && selectedProduct.images.map((img, i) => (
+                  <img 
+                    key={i} 
+                    src={img} 
+                    className="thumbnail" 
+                    onClick={() => document.getElementById('main-img-view').src = img}
+                    alt={`${selectedProduct.name} ${i+1}`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div style={{display:"flex", flexDirection:"column", justifyContent:"center"}}>
+              <span className="tag" style={{alignSelf:"flex-start", background:G.goldDark+"22", color:G.gold, marginBottom:"1rem"}}>{selectedProduct.category}</span>
+              <h2 style={{fontFamily:"'Cormorant Garamond',serif", fontSize:"2.2rem", color:G.cream, marginBottom:".5rem", lineHeight:1.2}}>{selectedProduct.name}</h2>
+              <p style={{fontSize:".9rem", color:G.textMuted, marginBottom:"1.5rem", letterSpacing:".05em"}}>Material: <span style={{color:G.gold}}>{selectedProduct.metal}</span></p>
+              
+              <div className="divider" style={{margin:"0 0 1.5rem 0"}}/>
+              
+              <p style={{color:G.cream, opacity:0.8, fontSize:".95rem", lineHeight:1.6, marginBottom:"2rem"}}>{selectedProduct.description}</p>
+              
+              <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginTop:"auto"}}>
+                <span style={{fontFamily:"'Cormorant Garamond',serif", fontSize:"2rem", color:G.gold}}>{(selectedProduct.price || 0).toLocaleString('en-IN', {style: 'currency', currency: 'INR', maximumFractionDigits: 0})}</span>
+                <button 
+                  className="gold-btn" 
+                  style={{padding:"1rem 2rem"}}
+                  onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }}
+                >
+                  Add to Cart
+                </button>
+              </div>
+              {selectedProduct.stock <= 3 && <p style={{fontSize:".8rem", color:G.error, marginTop:"1rem"}}>Hurry! Only {selectedProduct.stock} pieces left.</p>}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Pages */}
       {loading ? (
@@ -223,7 +302,7 @@ export default function App() {
         </div>
       ) : (
         <>
-          {page==="home" && <HomePage products={filteredProducts} recentProducts={recentProducts} recentIds={recentIds} search={search} setSearch={setSearch} filterMetal={filterMetal} setFilterMetal={setFilterMetal} filterPrice={filterPrice} setFilterPrice={setFilterPrice} onAddCart={addToCart}/>}
+          {page==="home" && <HomePage products={filteredProducts} recentProducts={recentProducts} recentIds={recentIds} search={search} setSearch={setSearch} filterMetal={filterMetal} setFilterMetal={setFilterMetal} filterPrice={filterPrice} setFilterPrice={setFilterPrice} onAddCart={addToCart} onView={setSelectedProduct}/>}
           {page==="login" && <LoginPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
           {page==="register" && <RegisterPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
           {page==="cart" && <CartPage cart={cart} removeFromCart={removeFromCart} updateQty={updateQty} cartTotal={cartTotal} setPage={setPage}/>}
