@@ -1,20 +1,20 @@
 const BASE_URL = "https://shoppingjewelleries.onrender.com/api";
 
-// Normalize a product from backend shape (_id, title, imageURL, stockQuantity) 
-// to frontend shape (id, name, image, stock)
+// Normalize a product from backend shape (_id, name, images, stock) 
+// to frontend shape (id, name, images, stock)
 const normalizeProduct = (p) => {
   if (!p) return null;
   const normalized = {
     ...p,
     id: p._id || p.id || String(Math.random()),
     _id: p._id || p.id, // Keep both just in case
-    name: p.title || p.name || "Untitled Piece",
+    name: p.name || p.title || "Untitled Piece",
     description: p.description || "",
     price: Number(p.price) || 0,
-    image: p.imageURL || p.image || "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80",
+    images: p.images || (p.imageURL ? [p.imageURL] : ["https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80"]),
     metal: (p.metal || "gold").toLowerCase(),
     category: p.category || "ring",
-    stock: p.stockQuantity ?? p.stock ?? 0,
+    stock: p.stock ?? p.stockQuantity ?? 0,
     createdAt: p.createdAt || Date.now(),
   };
   return normalized;
@@ -35,13 +35,13 @@ export const getProducts = async () => {
 
 export const createProduct = async (product, token) => {
   const body = {
-    title: product.name,
+    name: product.name,
     description: product.description,
     price: Number(product.price),
     category: product.category,
     metal: product.metal,
-    imageURL: product.image,
-    stockQuantity: Number(product.stock),
+    images: product.images, // Now an array
+    stock: Number(product.stock),
   };
   console.log("Creating product with body:", body);
   const res = await fetch(`${BASE_URL}/products`, {
@@ -59,13 +59,13 @@ export const createProduct = async (product, token) => {
 
 export const updateProduct = async (id, product, token) => {
   const body = {
-    title: product.name,
+    name: product.name,
     description: product.description,
     price: Number(product.price),
     category: product.category,
     metal: product.metal,
-    imageURL: product.image,
-    stockQuantity: Number(product.stock),
+    images: product.images, // Now an array
+    stock: Number(product.stock),
   };
   console.log(`Updating product ${id} with body:`, body);
   const res = await fetch(`${BASE_URL}/products/${id}`, {
