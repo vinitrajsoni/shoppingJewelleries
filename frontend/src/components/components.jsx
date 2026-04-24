@@ -21,25 +21,21 @@ export function Badge({count}) {
 export function ProductCard({product, onAddCart, onView, isNew}) {
   return (
     <div className="card fadeUp" style={{overflow:"hidden",position:"relative",cursor:"pointer"}} onClick={() => onView(product)}>
-      {isNew && <div style={{position:"absolute",top:10,left:10,zIndex:2,background:G.gold,color:G.dark,padding:".15rem .5rem",fontSize:".65rem",fontWeight:600,letterSpacing:".08em",borderRadius:2}}>NEW</div>}
-      <div style={{height:200,overflow:"hidden",background:"#0f0a04"}}>
+      {isNew && <div style={{position:"absolute",top:8,left:8,zIndex:2,background:G.gold,color:G.dark,padding:".1rem .4rem",fontSize:".6rem",fontWeight:600,letterSpacing:".05em",borderRadius:2}}>NEW</div>}
+      <div style={{height:160,overflow:"hidden",background:"#0f0a04"}}>
         <img src={product.images && product.images[0]} alt={product.name} style={{width:"100%",height:"100%",objectFit:"cover",opacity:.9,transition:"transform .4s"}}
           onMouseEnter={e=>e.target.style.transform="scale(1.06)"}
           onMouseLeave={e=>e.target.style.transform="scale(1)"}/>
       </div>
-      <div style={{padding:"1rem"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:".4rem"}}>
-          <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.05rem",fontWeight:600,lineHeight:1.3,flex:1}}>{product.name}</h3>
-        </div>
-        <span className="tag" style={{background:`${metalColor(product.metal)}22`,color:metalColor(product.metal),marginBottom:".6rem"}}>{metalLabel(product.metal)}</span>
-        <p style={{fontSize:".78rem",color:G.textMuted,lineHeight:1.5,margin:".5rem 0 .8rem",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{product.description}</p>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.25rem",color:G.gold}}>{fmt(product.price)}</span>
-          <button className="gold-btn trace-btn" style={{padding:".5rem 1rem",fontSize:".72rem"}} onClick={(e)=>{e.stopPropagation(); onAddCart(product)}}>
-            Add to Cart
+      <div style={{padding:".8rem"}}>
+        <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:".95rem",fontWeight:600,lineHeight:1.2,marginBottom:".3rem",display:"-webkit-box",WebkitLineClamp:1,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{product.name}</h3>
+        <span className="tag" style={{background:`${metalColor(product.metal)}22`,color:metalColor(product.metal),marginBottom:".5rem",fontSize:".65rem"}}>{metalLabel(product.metal)}</span>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:".5rem"}}>
+          <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.1rem",color:G.gold}}>{fmt(product.price)}</span>
+          <button className="gold-btn trace-btn" style={{padding:".4rem .8rem",fontSize:".65rem"}} onClick={(e)=>{e.stopPropagation(); onAddCart(product)}}>
+            Add
           </button>
         </div>
-        {product.stock<=3 && <p style={{fontSize:".7rem",color:"#E07050",marginTop:".4rem"}}>Only {product.stock} left!</p>}
       </div>
     </div>
   );

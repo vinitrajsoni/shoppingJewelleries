@@ -40,7 +40,7 @@ function HomePage({products,recentProducts,recentIds,search,setSearch,filterMeta
       {!search && filterMetal==="all" && filterPrice==="all" && (
         <>
           <SectionHead title="Recent Arrivals" sub="Freshly added to our collection"/>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(230px,1fr))",gap:"1.2rem",marginBottom:"3rem"}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:".8rem",marginBottom:"3rem"}}>
             {recentProducts.map(p=><ProductCard key={p._id || p.id} product={p} onAddCart={onAddCart} onView={onView} isNew/>)}
           </div>
           <div className="divider"/>
@@ -55,7 +55,7 @@ function HomePage({products,recentProducts,recentIds,search,setSearch,filterMeta
           <p>No products match your search.</p>
         </div>
       ) : (
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(230px,1fr))",gap:"1.2rem"}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:".8rem"}}>
           {products.map(p=><ProductCard key={p._id || p.id} product={p} onAddCart={onAddCart} onView={onView} isNew={!search&&filterMetal==="all"&&filterPrice==="all"&&recentIds.has(p._id || p.id)}/>)}
         </div>
       )}
