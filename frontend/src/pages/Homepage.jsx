@@ -32,7 +32,8 @@ function HomePage({products,recentProducts,recentIds,search,setSearch,filterMeta
         <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"clamp(2.5rem,5vw,4rem)",fontWeight:300,lineHeight:1.15,color:G.cream,marginBottom:"1rem"}}>
           Adorn Yourself with<br/><em style={{color:G.gold}}>Timeless Elegance</em>
         </h1>
-        <p style={{color:G.textMuted,fontSize:".9rem",maxWidth:480,margin:"0 auto"}}>Gold, silver & artisan-crafted pieces for every occasion.</p>
+        <p style={{color:G.textMuted,fontSize:".9rem",maxWidth:480,margin:"0 auto",marginBottom:"1.5rem"}}>Gold, silver & artisan-crafted pieces for every occasion.</p>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.3rem",color:G.goldLight,letterSpacing:".05em"}}>Come and visit our store!</p>
       </div>
 
       {/* Search & Filters */}
