@@ -149,6 +149,11 @@ const css = `
     50% { transform: scale(1.6); opacity: 1; }
     100% { transform: scale(1.5); opacity: 0.5; }
   }
+
+  .cart-layout { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; align-items: start; }
+  @media (max-width: 768px) {
+    .cart-layout { grid-template-columns: 1fr; }
+  }
 `;
 
 
@@ -262,8 +267,8 @@ export default function App() {
       {/* Preloader */}
       {showPreloader && (
         <div className="preloader">
-          <div className="preloader-logo">
-            <Logo />
+          <div className="preloader-logo" style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"10px"}}>
+            <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"2.2rem",fontWeight:300,letterSpacing:".1em",color:G.gold}}>H.P. JEWELLERS</span>
           </div>
           <div style={{width:150, height:1, background:G.border, position:"relative", overflow:"hidden"}}>
             <div style={{position:"absolute", top:0, left:0, height:"100%", width:"50%", background:G.gold, animation:"borderTrace 2s linear infinite"}}/>

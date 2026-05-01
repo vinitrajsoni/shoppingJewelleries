@@ -13,7 +13,7 @@ function CartPage({cart,removeFromCart,updateQty,cartTotal,setPage}) {
   return (
     <div style={{maxWidth:900,margin:"0 auto",padding:"2rem"}}>
       <SectionHead title="Shopping Cart" sub={`${cart.length} item(s)`}/>
-      <div style={{display:"grid",gridTemplateColumns:"1fr auto",gap:"2rem",alignItems:"start"}}>
+      <div className="cart-layout">
         <div style={{display:"flex",flexDirection:"column",gap:"1rem"}}>
           {cart.map(item=>(
             <div key={item.id} className="card" style={{display:"flex",gap:"1rem",padding:"1rem"}}>

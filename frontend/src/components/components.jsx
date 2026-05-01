@@ -5,7 +5,9 @@ import logoImage from "../assets/logo.png";
 export function Logo() {
   return (
     <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-      <img src={logoImage} alt="H.P. Jewellers Logo" style={{height: 50, width: "auto", objectFit:"contain", borderRadius: 4}} />
+      <div style={{width:38,height:38,borderRadius:"50%",overflow:"hidden",border:`1.5px solid ${G.gold}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <img src={logoImage} alt="H.P. Jewellers Logo" style={{width:"100%",height:"100%",objectFit:"cover"}} />
+      </div>
       <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.4rem",fontWeight:300,letterSpacing:".1em",color:G.gold}}>H.P. JEWELLERS</span>
     </div>
   );
