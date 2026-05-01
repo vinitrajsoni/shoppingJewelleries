@@ -1,9 +1,11 @@
 import { G } from "../App";
 import { fmt, metalColor, metalLabel } from "./Helpers";
+import logoImage from "../assets/logo.png";
+
 export function Logo() {
   return (
     <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-      <div style={{width:32,height:32,border:`1.5px solid ${G.gold}`,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem"}}>◆</div>
+      <img src={logoImage} alt="H.P. Jewellers Logo" style={{height: 50, width: "auto", objectFit:"contain", borderRadius: 4}} />
       <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.4rem",fontWeight:300,letterSpacing:".1em",color:G.gold}}>H.P. JEWELLERS</span>
     </div>
   );
