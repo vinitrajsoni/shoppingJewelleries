@@ -1,7 +1,29 @@
 import { G } from "../App";
 import { ProductCard } from "../components/components";
+import { useState, useEffect } from "react";
 
 function HomePage({products,recentProducts,recentIds,search,setSearch,filterMetal,setFilterMetal,filterPrice,setFilterPrice,onAddCart,onView}) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 20;
+
+  // Reset page to 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, filterMetal, filterPrice]);
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(products.length / productsPerPage);
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrev = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
   return (
     <div style={{maxWidth:1200,margin:"0 auto",padding:"2rem"}}>
       {/* Hero */}
@@ -37,7 +59,7 @@ function HomePage({products,recentProducts,recentIds,search,setSearch,filterMeta
       </div>
 
       {/* Recent Arrivals */}
-      {!search && filterMetal==="all" && filterPrice==="all" && (
+      {!search && filterMetal==="all" && filterPrice==="all" && currentPage === 1 && (
         <>
           <SectionHead title="Recent Arrivals" sub="Freshly added to our collection"/>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:".8rem",marginBottom:"3rem"}}>
@@ -55,9 +77,33 @@ function HomePage({products,recentProducts,recentIds,search,setSearch,filterMeta
           <p>No products match your search.</p>
         </div>
       ) : (
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:".8rem"}}>
-          {products.map(p=><ProductCard key={p._id || p.id} product={p} onAddCart={onAddCart} onView={onView} isNew={!search&&filterMetal==="all"&&filterPrice==="all"&&recentIds.has(p._id || p.id)}/>)}
-        </div>
+        <>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:".8rem"}}>
+            {currentProducts.map(p=><ProductCard key={p._id || p.id} product={p} onAddCart={onAddCart} onView={onView} isNew={!search&&filterMetal==="all"&&filterPrice==="all"&&recentIds.has(p._id || p.id)}/>)}
+          </div>
+          
+          {totalPages > 1 && (
+            <div style={{display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem", marginTop: "3rem"}}>
+              <button 
+                className="ghost-btn" 
+                onClick={handlePrev} 
+                disabled={currentPage === 1}
+                style={{opacity: currentPage === 1 ? 0.5 : 1, cursor: currentPage === 1 ? "not-allowed" : "pointer"}}
+              >
+                Previous
+              </button>
+              <span style={{color: G.cream, fontSize: ".9rem"}}>Page {currentPage} of {totalPages}</span>
+              <button 
+                className="ghost-btn" 
+                onClick={handleNext} 
+                disabled={currentPage === totalPages}
+                style={{opacity: currentPage === totalPages ? 0.5 : 1, cursor: currentPage === totalPages ? "not-allowed" : "pointer"}}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

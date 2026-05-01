@@ -31,7 +31,7 @@ export function ProductCard({product, onAddCart, onView, isNew}) {
         <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:".95rem",fontWeight:600,lineHeight:1.2,marginBottom:".3rem",display:"-webkit-box",WebkitLineClamp:1,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{product.name}</h3>
         <span className="tag" style={{background:`${metalColor(product.metal)}22`,color:metalColor(product.metal),marginBottom:".5rem",fontSize:".65rem"}}>{metalLabel(product.metal)}</span>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:".5rem"}}>
-          <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.1rem",color:G.gold}}>{fmt(product.price)}</span>
+          <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:".85rem",color:G.gold, lineHeight: 1.2}}>Price based on <br/>Live Rate + Making</span>
           <button className="gold-btn trace-btn" style={{padding:".4rem .8rem",fontSize:".65rem"}} onClick={(e)=>{e.stopPropagation(); onAddCart(product)}}>
             Add
           </button>

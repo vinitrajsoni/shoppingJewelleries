@@ -4,6 +4,8 @@ import HomePage from "./pages/Homepage";
 import { LoginPage, RegisterPage } from "./pages/Authpage";
 import CartPage from "./pages/Cartproducts";
 import CheckoutPage from "./pages/Checkout";
+import AboutUs from "./pages/AboutUs";
+import Footer from "./components/Footer";
 
 import AdminPage from "./Admin/adminDashboard";
 import AdminOrdersPage from "./Admin/adminOrders";
@@ -281,6 +283,11 @@ export default function App() {
         <div className="nav-container">
           <button onClick={()=>{setPage("home"); setMenuOpen(false)}} style={{background:"none",border:"none",cursor:"pointer"}}><Logo/></button>
           
+          <div className={`nav-links ${menuOpen ? 'open' : ''}`} style={{marginRight: "auto", marginLeft: "2rem"}}>
+            <button className="ghost-btn" onClick={()=>{setPage("home"); setMenuOpen(false)}} style={{border: "none", padding: ".5rem", fontSize: ".9rem"}}>Home</button>
+            <button className="ghost-btn" onClick={()=>{setPage("about"); setMenuOpen(false)}} style={{border: "none", padding: ".5rem", fontSize: ".9rem"}}>About Us</button>
+          </div>
+
           <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
             {menuOpen ? "✕" : "☰"}
           </button>
@@ -344,7 +351,9 @@ export default function App() {
               <p style={{color:G.cream, opacity:0.8, fontSize:".95rem", lineHeight:1.6, marginBottom:"2rem"}}>{selectedProduct.description}</p>
               
               <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginTop:"auto"}}>
-                <span style={{fontFamily:"'Cormorant Garamond',serif", fontSize:"2rem", color:G.gold}}>{(selectedProduct.price || 0).toLocaleString('en-IN', {style: 'currency', currency: 'INR', maximumFractionDigits: 0})}</span>
+                <div style={{fontFamily:"'Cormorant Garamond',serif", fontSize:"1.2rem", color:G.gold, lineHeight: 1.4}}>
+                  Price = (Weight × Live Rate) <br/> + Making Charges & Taxes
+                </div>
                 <button 
                   className="gold-btn trace-btn" 
                   style={{padding:"1rem 2rem"}}
@@ -370,6 +379,7 @@ export default function App() {
       ) : (
         <>
           {page==="home" && <HomePage products={filteredProducts} recentProducts={recentProducts} recentIds={recentIds} search={search} setSearch={setSearch} filterMetal={filterMetal} setFilterMetal={setFilterMetal} filterPrice={filterPrice} setFilterPrice={setFilterPrice} onAddCart={addToCart} onView={setSelectedProduct}/>}
+          {page==="about" && <AboutUs />}
           {page==="login" && <LoginPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
           {page==="register" && <RegisterPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
           {page==="cart" && <CartPage cart={cart} removeFromCart={removeFromCart} updateQty={updateQty} cartTotal={cartTotal} setPage={setPage}/>}
@@ -379,6 +389,9 @@ export default function App() {
           {page==="admin-products" && isAdmin && <AdminProductsPage products={products} setProducts={setProducts} setPage={setPage} showToast={showToast}/>}
         </>
       )}
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
