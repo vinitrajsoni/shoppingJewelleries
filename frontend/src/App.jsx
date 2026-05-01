@@ -203,6 +203,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showPreloader, setShowPreloader] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowPreloader(false), 3000);
@@ -273,7 +274,16 @@ export default function App() {
   const cartTotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
   const cartCount = cart.reduce((s,i)=>s+i.qty,0);
 
-  const logout = () => { setCurrentUser(null); setCart([]); setPage("home"); };
+  const goHome = () => {
+    setSearch("");
+    setFilterMetal("all");
+    setFilterPrice("all");
+    setPage("home");
+    setRefreshKey(prev => prev + 1);
+    setMenuOpen(false);
+  };
+
+  const logout = () => { setCurrentUser(null); setCart([]); goHome(); };
 
   // Sort & filter products
   const sortedProducts = [...products].sort((a,b)=>b.createdAt-a.createdAt);
@@ -318,7 +328,7 @@ export default function App() {
       {/* Navbar */}
       <nav style={{position:"sticky",top:0,zIndex:100,background:"rgba(26,18,8,.95)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${G.border}`,padding:"1rem 1.5rem"}}>
         <div className="nav-container">
-          <button onClick={()=>{setPage("home"); setMenuOpen(false)}} style={{background:"none",border:"none",cursor:"pointer"}}><Logo/></button>
+          <button onClick={goHome} style={{background:"none",border:"none",cursor:"pointer"}}><Logo/></button>
           
           <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
             {menuOpen ? "✕" : "☰"}
@@ -326,7 +336,7 @@ export default function App() {
 
           <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
             {/* Main Links */}
-            <button className="ghost-btn" onClick={()=>{setPage("home"); setMenuOpen(false)}} style={{border: "none", padding: ".5rem", fontSize: ".9rem"}}>Home</button>
+            <button className="ghost-btn" onClick={goHome} style={{border: "none", padding: ".5rem", fontSize: ".9rem"}}>Home</button>
             <button className="ghost-btn" onClick={()=>{setPage("about"); setMenuOpen(false)}} style={{border: "none", padding: ".5rem", fontSize: ".9rem"}}>About Us</button>
 
             {/* Auth / User Actions */}
@@ -415,7 +425,7 @@ export default function App() {
         </div>
       ) : (
         <>
-          {page==="home" && <HomePage products={filteredProducts} recentProducts={recentProducts} recentIds={recentIds} search={search} setSearch={setSearch} filterMetal={filterMetal} setFilterMetal={setFilterMetal} filterPrice={filterPrice} setFilterPrice={setFilterPrice} onAddCart={addToCart} onView={setSelectedProduct}/>}
+          {page==="home" && <HomePage key={refreshKey} products={filteredProducts} recentProducts={recentProducts} recentIds={recentIds} search={search} setSearch={setSearch} filterMetal={filterMetal} setFilterMetal={setFilterMetal} filterPrice={filterPrice} setFilterPrice={setFilterPrice} onAddCart={addToCart} onView={setSelectedProduct}/>}
           {page==="about" && <AboutUs />}
           {page==="terms" && <TermsPage />}
           {page==="privacy" && <PrivacyPage />}
