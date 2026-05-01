@@ -284,16 +284,16 @@ export default function App() {
         <div className="nav-container">
           <button onClick={()=>{setPage("home"); setMenuOpen(false)}} style={{background:"none",border:"none",cursor:"pointer"}}><Logo/></button>
           
-          <div className={`nav-links ${menuOpen ? 'open' : ''}`} style={{marginRight: "auto", marginLeft: "2rem"}}>
-            <button className="ghost-btn" onClick={()=>{setPage("home"); setMenuOpen(false)}} style={{border: "none", padding: ".5rem", fontSize: ".9rem"}}>Home</button>
-            <button className="ghost-btn" onClick={()=>{setPage("about"); setMenuOpen(false)}} style={{border: "none", padding: ".5rem", fontSize: ".9rem"}}>About Us</button>
-          </div>
-
           <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
             {menuOpen ? "✕" : "☰"}
           </button>
 
           <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
+            {/* Main Links */}
+            <button className="ghost-btn" onClick={()=>{setPage("home"); setMenuOpen(false)}} style={{border: "none", padding: ".5rem", fontSize: ".9rem"}}>Home</button>
+            <button className="ghost-btn" onClick={()=>{setPage("about"); setMenuOpen(false)}} style={{border: "none", padding: ".5rem", fontSize: ".9rem"}}>About Us</button>
+
+            {/* Auth / User Actions */}
             {!currentUser ? (
               <>
                 <button className="ghost-btn" onClick={()=>setPage("login")}>Login</button>
