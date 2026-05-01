@@ -1,6 +1,6 @@
 import { G } from "../App";
 
-export default function Footer() {
+export default function Footer({ setPage }) {
   return (
     <footer style={{background: G.darkCard, borderTop: `1px solid ${G.border}`, padding: "3rem 2rem", marginTop: "auto"}}>
       <div style={{maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "2rem"}}>
@@ -49,9 +49,9 @@ export default function Footer() {
         <div>
           <h4 style={{color: G.cream, fontSize: "1rem", marginBottom: "1rem", letterSpacing: ".05em"}}>Legal</h4>
           <ul style={{listStyle: "none", padding: 0, margin: 0, color: G.textMuted, fontSize: ".9rem", lineHeight: 2}}>
-            <li><a href="#" style={{color: "inherit", textDecoration: "none"}}>Terms & Conditions</a></li>
-            <li><a href="#" style={{color: "inherit", textDecoration: "none"}}>Privacy Policy</a></li>
-            <li><a href="#" style={{color: "inherit", textDecoration: "none"}}>Return Policy</a></li>
+            <li><button onClick={() => { window.scrollTo(0, 0); setPage("terms"); }} style={{background: "none", border: "none", color: "inherit", cursor: "pointer", fontSize: "inherit", padding: 0}}>Terms & Conditions</button></li>
+            <li><button onClick={() => { window.scrollTo(0, 0); setPage("privacy"); }} style={{background: "none", border: "none", color: "inherit", cursor: "pointer", fontSize: "inherit", padding: 0}}>Privacy Policy</button></li>
+            <li><button onClick={() => { window.scrollTo(0, 0); setPage("return"); }} style={{background: "none", border: "none", color: "inherit", cursor: "pointer", fontSize: "inherit", padding: 0}}>Return Policy</button></li>
           </ul>
         </div>
 

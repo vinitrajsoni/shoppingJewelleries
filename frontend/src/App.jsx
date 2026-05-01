@@ -5,6 +5,7 @@ import { LoginPage, RegisterPage } from "./pages/Authpage";
 import CartPage from "./pages/Cartproducts";
 import CheckoutPage from "./pages/Checkout";
 import AboutUs from "./pages/AboutUs";
+import { TermsPage, PrivacyPage, ReturnPage } from "./pages/LegalPages";
 import Footer from "./components/Footer";
 
 import AdminPage from "./Admin/adminDashboard";
@@ -380,6 +381,9 @@ export default function App() {
         <>
           {page==="home" && <HomePage products={filteredProducts} recentProducts={recentProducts} recentIds={recentIds} search={search} setSearch={setSearch} filterMetal={filterMetal} setFilterMetal={setFilterMetal} filterPrice={filterPrice} setFilterPrice={setFilterPrice} onAddCart={addToCart} onView={setSelectedProduct}/>}
           {page==="about" && <AboutUs />}
+          {page==="terms" && <TermsPage />}
+          {page==="privacy" && <PrivacyPage />}
+          {page==="return" && <ReturnPage />}
           {page==="login" && <LoginPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
           {page==="register" && <RegisterPage setCurrentUser={setCurrentUser} setPage={setPage} showToast={showToast}/>}
           {page==="cart" && <CartPage cart={cart} removeFromCart={removeFromCart} updateQty={updateQty} cartTotal={cartTotal} setPage={setPage}/>}
@@ -391,7 +395,7 @@ export default function App() {
       )}
 
       {/* Footer */}
-      <Footer />
+      <Footer setPage={setPage} />
     </div>
   );
 }
