@@ -138,16 +138,47 @@ const css = `
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: ${G.dark}; display: flex; flex-direction: column;
     align-items: center; justify-content: center; z-index: 10000;
+    padding: 0 1rem;
+    text-align: center;
   }
   .preloader-logo {
     transform: scale(1.5);
     animation: pulse 2s ease-in-out infinite;
     margin-bottom: 2rem;
   }
+  .preloader-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.5rem, 8vw, 2.2rem);
+    font-weight: 300;
+    letter-spacing: .1em;
+    color: ${G.gold};
+    text-align: center;
+    white-space: nowrap;
+  }
+  .preloader-subtext {
+    margin-top: 1.5rem;
+    font-size: clamp(0.5rem, 2.5vw, 0.7rem);
+    color: ${G.textMuted};
+    letter-spacing: clamp(.15em, 1vw, .3em);
+    text-transform: uppercase;
+    text-align: center;
+    padding: 0 1rem;
+  }
+  @media (max-width: 768px) {
+    .preloader-logo {
+      transform: scale(1);
+      animation: pulseMobile 2s ease-in-out infinite;
+    }
+  }
   @keyframes pulse {
     0% { transform: scale(1.5); opacity: 0.5; }
     50% { transform: scale(1.6); opacity: 1; }
     100% { transform: scale(1.5); opacity: 0.5; }
+  }
+  @keyframes pulseMobile {
+    0% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.5; }
   }
 
   .cart-layout { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; align-items: start; }
@@ -268,12 +299,12 @@ export default function App() {
       {showPreloader && (
         <div className="preloader">
           <div className="preloader-logo" style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"10px"}}>
-            <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"2.2rem",fontWeight:300,letterSpacing:".1em",color:G.gold}}>H.P. JEWELLERS</span>
+            <span className="preloader-text">H.P. JEWELLERS</span>
           </div>
           <div style={{width:150, height:1, background:G.border, position:"relative", overflow:"hidden"}}>
             <div style={{position:"absolute", top:0, left:0, height:"100%", width:"50%", background:G.gold, animation:"borderTrace 2s linear infinite"}}/>
           </div>
-          <p style={{marginTop:"1.5rem", fontSize:".7rem", color:G.textMuted, letterSpacing:".3em", textTransform:"uppercase"}}>Excellence in every detail</p>
+          <p className="preloader-subtext">Excellence in every detail</p>
         </div>
       )}
 
